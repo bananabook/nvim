@@ -10,7 +10,7 @@ function M.setup()
   vim.keymap.set('n', 'F3', '<cmd>set wrap!<CR>')
 
   vim.keymap.set('n', 'ä', '<cmd>nohlsearch<CR>')
-  vim.keymap.set('n', '<leader>K', '<cmd>list!<CR>')
+  vim.keymap.set('n', '<leader>L', '<cmd>set list!<CR>')
   vim.keymap.set('n', '<leader>w', '<cmd>w<CR>')
   vim.keymap.set('n', '<leader>q', '<cmd>q<CR>')
   vim.keymap.set('n', '<leader>Q', '<cmd>x<CR>')

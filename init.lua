@@ -149,7 +149,7 @@ vim.o.splitbelow = true
 --  It is very similar to `vim.o` but offers an interface for conveniently interacting with tables.
 --   See `:help lua-options`
 --   and `:help lua-options-guide`
-vim.o.list = true
+vim.o.list = false
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
@@ -248,6 +248,55 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
 
+  {
+    'mfussenegger/nvim-dap',
+    dependencies = {
+      {
+        'nvim-neotest/nvim-nio',
+        'rcarriga/nvim-dap-ui',
+        config = function()
+          local dap = require 'dap'
+          local dapui = require 'dapui'
+
+          dapui.setup()
+
+          dap.listeners.after.event_initialized['dapui'] = function()
+            dapui.open()
+          end
+          dap.listeners.before.event_terminated['dapui'] = function()
+            dapui.close()
+          end
+          dap.listeners.before.event_exited['dapui'] = function()
+            dapui.close()
+          end
+        end,
+      },
+      {
+        'leoluz/nvim-dap-go',
+        ft = 'go',
+        config = function()
+          require('dap-go').setup()
+        end,
+      },
+    },
+    config = function()
+      local dap = require 'dap'
+
+      -- VS Code–like keybindings
+      vim.keymap.set('n', '<F5>', dap.continue)
+      vim.keymap.set('n', '<F10>', dap.step_over)
+      vim.keymap.set('n', '<F11>', dap.step_into)
+      vim.keymap.set('n', '<F12>', dap.step_out)
+
+      vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint)
+      vim.keymap.set('n', '<leader>B', function()
+        dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+      end)
+
+      vim.keymap.set('n', '<leader>dr', dap.repl.open)
+      vim.keymap.set('n', '<leader>dl', dap.run_last)
+    end,
+  },
   -- search and replace
   'nvim-lua/plenary.nvim',
   'nvim-pack/nvim-spectre',
@@ -900,7 +949,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'minicyan'
+      vim.cmd.colorscheme 'miniwinter'
     end,
   },
 
@@ -923,7 +972,7 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      -- require('mini.surround').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -958,9 +1007,9 @@ require('lazy').setup({
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        additional_vim_regex_highlighting = { 'ruby', 'javascript' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true, disable = { 'ruby', 'javascript' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -1019,6 +1068,7 @@ require('lazy').setup({
 })
 
 require('keybinds').setup()
+require('custom').setup()
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
